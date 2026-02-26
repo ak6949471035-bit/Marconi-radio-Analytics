@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+station-tracker.db
+station-tracker.db-shm
+station-tracker.db-wal
+static/
+notes.md
