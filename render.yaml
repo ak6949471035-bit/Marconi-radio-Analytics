@@ -5,12 +5,6 @@ services:
     plan: free
     dockerfilePath: ./Dockerfile
     autoDeploy: true
-    disk:
-      name: marconi-data
-      mountPath: /data
-      sizeGB: 1
     envVars:
       - key: PYTHONDONTWRITEBYTECODE
         value: "1"
-      - key: DATABASE_URL
-        value: sqlite+aiosqlite:////data/station-tracker.db
