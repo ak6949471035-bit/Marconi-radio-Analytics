@@ -1,16 +1,13 @@
-import {
+﻿import {
   HeadContent,
   Scripts,
   createRootRouteWithContext,
 } from "@tanstack/react-router";
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import { TanStackDevtools } from "@tanstack/react-devtools";
-
-import Header from "../components/Header";
 import {
   AudioPlayerProvider,
   useAudioPlayer,
 } from "../components/AudioPlayerContext";
+import AppShell from "../components/AppShell";
 import NowPlayingBar from "../components/NowPlayingBar";
 
 import appCss from "../styles.css?url";
@@ -32,11 +29,11 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "Station Tracker",
+        title: "Marconi SoundIntel",
       },
       {
         name: "apple-mobile-web-app-title",
-        content: "Station Tracker",
+        content: "Marconi SoundIntel",
       },
     ],
     links: [
@@ -76,7 +73,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 function LayoutWithNowPlayingBar({ children }: { children: React.ReactNode }) {
   const { nowPlaying } = useAudioPlayer();
-  return <div className={nowPlaying ? "pb-20" : undefined}>{children}</div>;
+  return <AppShell><div className={nowPlaying ? "marconi-page-with-player" : "marconi-page"}>{children}</div></AppShell>;
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
@@ -88,7 +85,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body>
         <AudioPlayerProvider>
           <LayoutWithNowPlayingBar>
-            <Header />
             {children}
           </LayoutWithNowPlayingBar>
           <NowPlayingBar />

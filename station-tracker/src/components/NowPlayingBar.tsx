@@ -1,4 +1,4 @@
-import { Music, Pause, Volume2 } from "lucide-react";
+﻿import { Music, Pause, Volume2 } from "lucide-react";
 import { useEffect } from "react";
 import { useRouterState } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -39,10 +39,10 @@ function buildTitle(
   if (currentPageLabel) parts.push(currentPageLabel);
 
   if (parts.length > 0) {
-    return `${parts.join(" | ")} | Station Tracker`;
+    return `${parts.join(" | ")} | Marconi SoundIntel`;
   }
 
-  return "Station Tracker";
+  return "Marconi SoundIntel";
 }
 
 function formatTime(seconds: number): string {
@@ -132,15 +132,9 @@ export default function NowPlayingBar() {
   const detailLine = detailParts.length > 0 ? detailParts.join(" · ") : null;
 
   return (
-    <div
-      className="fixed bottom-0 left-0 right-0 z-40 transition-[transform,opacity] duration-300 ease-out pointer-events-none"
-      style={{
-        transform: nowPlaying ? "translateY(0)" : "translateY(100%)",
-        opacity: nowPlaying ? 1 : 0,
-      }}
-    >
+    <div className="marconi-live-player">
       <div
-        className="pointer-events-auto bg-base-200 border-t border-base-300 shadow-lg rounded-t-box"
+        className="marconi-live-player-inner"
         style={{
           paddingBottom: "env(safe-area-inset-bottom)",
           minHeight: "56px",
@@ -182,9 +176,10 @@ export default function NowPlayingBar() {
                   )}
                 </>
               ) : (
-                <p className="text-sm font-bold opacity-80 break-words">
-                  Now playing
-                </p>
+                <div className="marconi-player-standby">
+                  <Music className="w-4 h-4" />
+                  <p>Επίλεξε έναν σταθμό για ακρόαση</p>
+                </div>
               )}
             </div>
             <button

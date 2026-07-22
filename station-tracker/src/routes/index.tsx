@@ -1,6 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+﻿import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  Activity,
+  CheckCircle2,
+  CircleAlert,
   Music,
   Play,
   Pause,
@@ -8,6 +11,7 @@ import {
   Plus,
   Star,
   Radio,
+  Sparkles,
   Youtube,
 } from "lucide-react";
 import { useState } from "react";
@@ -28,7 +32,7 @@ import type { StationFormData } from "../components/StationDialog";
 
 export const Route = createFileRoute("/")({
   head: () => ({
-    meta: [{ title: "Stations | Station Tracker" }],
+    meta: [{ title: "Dashboard | Marconi SoundIntel" }],
   }),
   component: StationsPage,
 });
@@ -169,14 +173,45 @@ function InfoIcon({ className }: { className?: string }) {
     );
   }
 
+  const stations = data?.stations ?? [];
+  const activeStations = stations.filter((station) => station.enabled).length;
+  const detectedNow = stations.filter((station) => station.currentTrack).length;
+  const failedStations = stations.filter((station) => station.errorMessage).length;
+  const confidenceSamples = stations.filter(
+    (station) => station.currentTrack?.confidenceScore != null,
+  );
+  const averageConfidence = confidenceSamples.length
+    ? Math.round(
+        confidenceSamples.reduce(
+          (total, station) => total + (station.currentTrack?.confidenceScore ?? 0),
+          0,
+        ) / confidenceSamples.length,
+      )
+    : 0;
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">Stations</h1>
-        <button className="btn btn-primary btn-sm" onClick={handleAdd}>
+      <div className="marconi-page-header">
+        <div>
+          <p>RADIO INTELLIGENCE · LIVE SNAPSHOT</p>
+          <h1>Dashboard</h1>
+          <span>Παρακολούθηση σταθμών, αναγνωρίσεων και airplays σε πραγματικό χρόνο.</span>
+        </div>
+        <button type="button" className="btn btn-primary btn-sm" onClick={handleAdd}>
           <Plus className="h-4 w-4" />
-          Add
+          Νέος σταθμός
         </button>
+      </div>
+      <DashboardMetrics
+        activeStations={activeStations}
+        detectedNow={detectedNow}
+        averageConfidence={averageConfidence}
+        failedStations={failedStations}
+        totalStations={stations.length}
+      />
+      <div className="marconi-section-heading">
+        <div><p>LIVE MONITOR</p><h2>Live Now</h2></div>
+        <span>{activeStations} ενεργοί σταθμοί</span>
       </div>
       {data?.stations.length === 0 ? (
         <EmptyState
@@ -226,6 +261,41 @@ function InfoIcon({ className }: { className?: string }) {
         onConfirm={handleDeleteConfirm}
       />
     </div>
+  );
+}
+function DashboardMetrics({
+  activeStations,
+  detectedNow,
+  averageConfidence,
+  failedStations,
+  totalStations,
+}: {
+  activeStations: number;
+  detectedNow: number;
+  averageConfidence: number;
+  failedStations: number;
+  totalStations: number;
+}) {
+  const metrics = [
+    { label: "Active Stations", value: activeStations, detail: `${totalStations} configured`, icon: Radio, tone: "success" },
+    { label: "Detected Now", value: detectedNow, detail: "current fingerprints", icon: Music, tone: "info" },
+    { label: "Recognition Success", value: `${averageConfidence}%`, detail: "current confidence", icon: CheckCircle2, tone: "success" },
+    { label: "Failed Recognitions", value: failedStations, detail: failedStations ? "needs attention" : "no current failures", icon: CircleAlert, tone: failedStations ? "danger" : "neutral" },
+    { label: "Live Activity", value: `${detectedNow}/${activeStations || 0}`, detail: "stations with a track", icon: Activity, tone: "info" },
+    { label: "VOYAGER", value: "Live", detail: "learning station clocks", icon: Sparkles, tone: "accent" },
+  ];
+  return (
+    <section className="marconi-metric-grid" aria-label="Βασικά metrics">
+      {metrics.map((metric) => {
+        const Icon = metric.icon;
+        return (
+          <article key={metric.label} className={`marconi-metric-card is-${metric.tone}`}>
+            <div className="marconi-metric-icon"><Icon size={17} /></div>
+            <div><span>{metric.label}</span><strong>{metric.value}</strong><small>{metric.detail}</small></div>
+          </article>
+        );
+      })}
+    </section>
   );
 }
 
@@ -479,3 +549,4 @@ function ShazamDetailsDialog({
     </dialog>
   );
 }
+
